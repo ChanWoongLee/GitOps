@@ -45,16 +45,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ChanWoongLee/kube-manifest
-          path: gitops
+          ref: gitops
 
       - name : edit test
         run : |
           echo "${{ github.ref_name }}"
           echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
-          cd kube-manifest/gitops
       - name: Commit andpush files
         run: |
-          cd example-app-kustomize
           git config --global user.email "dlcksdnd6785@naver.com"
           git config --global user.name "ChanWoongLee"
           git commit -am "update kube-manifest"
