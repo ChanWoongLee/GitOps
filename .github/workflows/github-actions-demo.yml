@@ -4,26 +4,75 @@ on:
     branches:
       - master
 jobs:
-  gitops-example:
+
+  docker-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Check out code
         uses: actions/checkout@v3
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
         
-      - name: Login to Docker Hub
+      - name: Get verion
+        id: image
+        run: |
+          VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+          echo VERSION=$VERSION
+          echo "::set-output name=version::$VERSION"
+
+      - name: Login to GitHub Packages Container Registry
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v3
+
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v2
         with:
-          context: .
           push: true
-          tags: dlcksdnd6785/skill-up:latest
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
+   
+docker-build:
+  runs-on: ubuntu-latest
+  needs: docker-build
+  steps:    
+    - name: Get verion
+      id: image
+      run: |
+        VERSION= ${{ needs.steps.image.outputs.version }}
+        echo VERSION=$VERSION
+        echo "::set-output name=version::$VERSION"
+    - name: Setup Kustomize
+      uses: imranismail/setup-kustomize@v1
+
+    - name: Checkout kube-manifest repository
+      uses: actions/checkout@v3
+      with:
+        repository: ChanWoongLee/kube-manifest
+        path: gitops
+
+    - name : edit test
+      run : |
+        cd kube-manifest/gitops
+        echo ${{ needs.steps.image.outputs.version }} >> text.txt
+    - name: Commit andpush files
+      run: |
+        cd example-app-kustomize
+        git config --global user.email "dlcksdnd6785@naver.com"
+        git config --global user.name "ChanWoongLee"
+        git commit -am "update kube-manifest"
+        git push -u origin ${{ github.ref_name }}
+
+  
+
+    # - name: Update Kubernetes resources
+    #   run: |
+    #     cd example-app-kustomize/overlays/dev/
+    #     kustomize edit set image ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
+    #     cat kustomization.yaml
+    # - name: Commit files
+    #   run: |
+    #     cd example-app-kustomize
+    #     git config --global user.email "github-actions@github.com"
+    #     git config --global user.name "github-actions"
+    #     git commit -am "Update image tag"
+    #     git push -u origin main
