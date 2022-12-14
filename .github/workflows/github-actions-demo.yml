@@ -49,9 +49,9 @@ jobs:
 
       - name : edit test
         run : |
-          cd kube-manifest/gitops
           echo "${{ github.ref_name }}"
           echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
+          cd kube-manifest/gitops
       - name: Commit andpush files
         run: |
           cd example-app-kustomize
