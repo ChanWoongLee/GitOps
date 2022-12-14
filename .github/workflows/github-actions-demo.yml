@@ -27,9 +27,10 @@ jobs:
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v2
         with:
+          context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ steps.image.outputs.version }}
+            dlcksdnd6785/gitops:${{ steps.image.outputs.version }}
    
   docker-push:
     runs-on: ubuntu-latest
