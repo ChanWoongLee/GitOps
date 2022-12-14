@@ -42,7 +42,7 @@ jobs:
         id: image
         run: |
           VERSION= ${{ needs.docker-build-and-push.outputs.version }}
-          echo VERSION=$VERSION
+          echo "VERSION=$VERSION"
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v1
 
@@ -55,7 +55,7 @@ jobs:
       - name : edit test
         run : |
           cd kube-manifest/gitops
-          echo ${{ github.ref_name }}
+          echo "${{ github.ref_name }}"
           echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
       - name: Commit andpush files
         run: |
