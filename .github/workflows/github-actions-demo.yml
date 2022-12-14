@@ -49,14 +49,15 @@ jobs:
 
       - name : edit test
         run : |
-          echo "${{ github.ref_name }}"
           echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
+
       - name: Commit andpush files
         run: |
           git config --global user.email "dlcksdnd6785@naver.com"
           git config --global user.name "ChanWoongLee"
+          git add .
           git commit -am "update kube-manifest"
-          git push -u origin ${{ github.ref_name }}
+          git push -u origin gitops
 
   
 
