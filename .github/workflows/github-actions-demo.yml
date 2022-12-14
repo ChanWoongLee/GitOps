@@ -5,8 +5,10 @@ on:
       - master
 jobs:
 
-  docker-build:
+  docker-build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.image.outputs.version }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -32,14 +34,14 @@ jobs:
           tags: |
             dlcksdnd6785/gitops:${{ steps.image.outputs.version }}
    
-  docker-push:
+  update-manifest:
     runs-on: ubuntu-latest
-    needs: docker-build
+    needs: docker-build-and-push
     steps:    
       - name: Get verion
         id: image
         run: |
-          VERSION= ${{ needs.steps.image.outputs.version }}
+          VERSION= ${{ needs.docker-build-and-push.outputs.version }}
           echo VERSION=$VERSION
           echo "::set-output name=version::$VERSION"
       - name: Setup Kustomize
@@ -54,7 +56,8 @@ jobs:
       - name : edit test
         run : |
           cd kube-manifest/gitops
-          echo ${{ needs.steps.image.outputs.version }} >> text.txt
+          echo ${{ github.ref_name }}
+          echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
       - name: Commit andpush files
         run: |
           cd example-app-kustomize
