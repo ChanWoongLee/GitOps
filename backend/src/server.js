@@ -12,4 +12,5 @@ app.get('/api', function(req, res){
 
 app.listen(3003, function() {
   console.log('server on ');
+  return 'server on';
 });
