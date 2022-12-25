@@ -51,8 +51,8 @@ jobs:
       - name: update yaml with yq
         uses: mikefarah/yq@master
         with:
-          cmd : yq '(.spec.template.spec.containers[0].image | select(di == 1)) = "dlcksdnd6785/gitops:${{ needs.docker-build-and-push.outputs.version }}" ' -i  'gitops.yaml'
-
+          cmd : yq '( select(di == 1) | .spec.template.spec.containers[0].image ) = "dlcksdnd6785/gitops:${{ needs.docker-build-and-push.outputs.version }}"' -i   'gitops.yaml'
+  
       # - name: Setup yq
       #   uses: chrisdickinson/setup-yq@latest
 
