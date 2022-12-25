@@ -54,6 +54,8 @@ jobs:
 
       - name: update yaml with yq
         run: |
+          cat gitops.yaml
+          yq --help
           yq '(.spec.template.spec.containers.image | select(di == 1)) = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}" ' -i  gitops.yaml
           cat gitops.yaml
 
