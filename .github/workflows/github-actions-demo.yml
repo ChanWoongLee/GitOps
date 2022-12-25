@@ -48,16 +48,21 @@ jobs:
       - name : edit test
         run : |
           echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
-          
-      - name: Setup yq
-        uses: chrisdickinson/setup-yq@latest
 
-      - name: update yaml with yq
-        run: |
-          cat gitops.yaml
-          yq --help
+      - name: Set foobar to cool
+        uses: mikefarah/yq@master
+        with:
           yq '(.spec.template.spec.containers.image | select(di == 1)) = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}" ' -i  gitops.yaml
-          cat gitops.yaml
+
+      # - name: Setup yq
+      #   uses: chrisdickinson/setup-yq@latest
+
+
+      # - name: update yaml with yq
+      #   run: |
+      #     cat gitops.yaml
+      #     yq '(.spec.template.spec.containers.image | select(di == 1)) = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}" ' -i  gitops.yaml
+      #     cat gitops.yaml
 
       - name: Commit andpush files
         run: |
