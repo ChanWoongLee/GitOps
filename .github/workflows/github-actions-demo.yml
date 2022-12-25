@@ -44,7 +44,9 @@ jobs:
           repository: ChanWoongLee/kube-manifest
           token: ${{ secrets.ACTION_TOKEN }}
           ref: gitops
-
+      - name : check
+        run : cat gitops.yaml
+        
       - name: update yaml with yq
         uses: mikefarah/yq@master
         with:
