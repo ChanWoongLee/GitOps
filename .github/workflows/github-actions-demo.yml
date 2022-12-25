@@ -38,9 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker-build-and-push
     steps:    
-      - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v1
-
       - name: Checkout kube-manifest repository
         uses: actions/checkout@v3
         with:
@@ -52,12 +49,12 @@ jobs:
         run : |
           echo ${{ needs.docker-build-and-push.outputs.version }} >> text.txt
           
-      - name: user yq
+      - name: Setup yq
         uses: chrisdickinson/setup-yq@latest
 
       - name: update yaml with yq
         run: |
-          yq e --inplace 'select(document_index == 1) .spec.template.spec.containers[0].image = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}"' gitops.yaml
+          yq '(.spec.template.spec.containers.image | select(di == 1)) = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}" ' -i  gitops.yaml
           cat gitops.yaml
 
       - name: Commit andpush files
