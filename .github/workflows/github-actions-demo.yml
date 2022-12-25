@@ -52,7 +52,7 @@ jobs:
       - name: Set foobar to cool
         uses: mikefarah/yq@master
         with:
-          cmd : yq '(.spec.template.spec.containers.image | select(di == 1)) = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}" ' -i  gitops.yaml
+          cmd : yq '(.spec.template.spec.containers.image | select(di == 1)) = "dlcksdnd6785/gitops:${{ steps.image.outputs.version }}" ' -i  'gitops.yaml'
 
       # - name: Setup yq
       #   uses: chrisdickinson/setup-yq@latest
